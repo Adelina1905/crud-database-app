@@ -32,12 +32,12 @@ else
         {
             _context.Movies.Remove(movie);
             await _context.SaveChangesAsync();
-            N.NavigateTo("/movies"); // go back to list
+            N.NavigateTo("/movies"); 
         }
     }
 
     private void Cancel()
     {
-        N.NavigateTo("/movies"); // go back to list without deleting
+        N.NavigateTo("/movies"); 
     }
 }
