@@ -1,0 +1,66 @@
+﻿@page "/movies"
+@inject BlazorWebAppMovies1.Data.MovieContext _context
+@using BlazorWebAppMovies1.Models
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject NavigationManager N
+
+
+
+<h3>Movies</h3>
+
+@if (movies is null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (movies.Count == 0)
+{
+    <p><em>No movies found in the database.</em></p>
+}
+else
+{
+    <table class="table table-responsive table-striped table-hover align-middle">
+        <thead>
+        <tr class="text-center">
+            <th>Title</th>
+            <th>Description</th>
+            <th>Author</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var movie in movies)
+        {
+            <tr class="text-center">
+                <td>@movie.Title</td>
+                <td>@movie.ReleaseDate.ToShortDateString()</td>
+                <td>@movie.Price</td>
+                <td>
+                    <a class="btn btn-primary" @onclick='() => N.NavigateTo($"/edit/{movie.Id}")'>Edit</a>
+                    <a class="btn btn-success" @onclick='() => N.NavigateTo($"/details/{movie.Id}")'>Details</a>
+                    <a class="btn btn-danger" @onclick='() => N.NavigateTo($"/delete/{movie.Id}")'>Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<a class="btn btn-success mb-3" href="/create">Add New Movie</a>
+
+@code {
+    private List<Movie>? movies;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            movies = await _context.Movies.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ERROR: {ex.Message}");
+            throw; // rethrow so you can see details in browser
+        }
+    }
+}

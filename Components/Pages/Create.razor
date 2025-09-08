@@ -1,0 +1,54 @@
+﻿@page "/create"
+@rendermode InteractiveServer
+@inject BlazorWebAppMovies1.Data.MovieContext _context
+@inject NavigationManager Navigation
+@using BlazorWebAppMovies1.Models
+
+<h3>Create Movie</h3>
+
+<EditForm Model="newMovie" OnValidSubmit="HandleValidSubmit" FormName="CreateMovieForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="title">Title</label>
+        <InputText id="title" class="form-control" @bind-Value="newMovie.Title" required/>
+    </div>
+
+    <div class="mb-3">
+        <label for="releaseDate">Release Date</label>
+        <InputDate id="releaseDate" class="form-control" @bind-Value="newMovie.ReleaseDate" required/>
+    </div>
+
+    <div class="mb-3">
+        <label for="price">Price</label>
+        <InputNumber id="price" class="form-control" @bind-Value="newMovie.Price" required/>
+    </div>
+
+    <div class="mb-3">
+        <label for="genre">Genre</label>
+        <InputText id="genre" class="form-control" @bind-Value="newMovie.Genre" required/>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Movie</button>
+</EditForm>
+
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success mt-3">@successMessage</div>
+}
+
+@code {
+    private Movie newMovie = new Movie();
+    private string successMessage;
+
+    private async Task HandleValidSubmit()
+    {
+        _context.Movies.Add(newMovie);
+        await _context.SaveChangesAsync();
+        successMessage = $"Movie '{newMovie.Title}' created successfully!";
+        newMovie = new Movie(); // reset form
+        Navigation.NavigateTo("/movies");
+    }
+}

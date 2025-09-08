@@ -1,0 +1,69 @@
+@page "/edit/{Id:int}"
+@using BlazorWebAppMovies1.Data
+@using BlazorWebAppMovies1.Models
+@inject MovieContext _context
+@rendermode InteractiveServer
+@inject NavigationManager N
+
+
+<h3>Edit</h3>
+@if (movie == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="@movie" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="title">Title</label>
+            <InputText id="title" class="form-control" @bind-Value="movie.Title" />
+        </div>
+
+        <div class="form-group">
+            <label for="genre">Genre</label>
+            <InputText id="genre" class="form-control" @bind-Value="movie.Genre" />
+        </div>
+
+        <div class="form-group">
+            <label for="price">Price</label>
+            <InputNumber id="price" class="form-control" @bind-Value="movie.Price" />
+        </div>
+
+        <div class="form-group">
+            <label for="release">Release Date</label>
+            <InputDate id="release" class="form-control" @bind-Value="movie.ReleaseDate" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </EditForm>
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Movie movie;
+
+    protected override async Task OnInitializedAsync()
+    {
+        movie = await _context.Movies.FindAsync(Id);
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (movie != null)
+        {
+            _context.Movies.Update(movie);
+            await _context.SaveChangesAsync();
+            N.NavigateTo("/movies"); 
+        }
+    }
+
+    private void Cancel()
+    {
+        N.NavigateTo("/movies"); 
+    }
+}

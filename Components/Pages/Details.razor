@@ -1,0 +1,43 @@
+@page "/details/{Id:int}"
+@using BlazorWebAppMovies1.Data
+@using BlazorWebAppMovies1.Models
+@inject MovieContext _context
+@rendermode InteractiveServer
+@inject NavigationManager N
+
+<h3>Movie Details</h3>
+
+@if (movie == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">@movie.Title</h5>
+            <p class="card-text"><strong>Genre:</strong> @movie.Genre</p>
+            <p class="card-text"><strong>Price:</strong> @movie.Price</p>
+            <p class="card-text"><strong>Release Date:</strong> @movie.ReleaseDate.ToShortDateString()</p>
+
+            <button class="btn btn-secondary" @onclick="BackToList">Back to Movies</button>
+            <button class="btn btn-primary" @onclick='() => N.NavigateTo($"/edit/{movie.Id}")'>Edit</button>
+        </div>
+    </div>
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Movie movie;
+
+    protected override async Task OnInitializedAsync()
+    {
+        movie = await _context.Movies.FindAsync(Id);
+    }
+
+    private void BackToList()
+    {
+        N.NavigateTo("/movies");
+    }
+}

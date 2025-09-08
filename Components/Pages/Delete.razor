@@ -1,0 +1,43 @@
+@page "/delete/{Id:int}"
+@inject BlazorWebAppMovies1.Data.MovieContext _context
+@using BlazorWebAppMovies1.Models
+@rendermode InteractiveServer
+@inject NavigationManager N
+
+@if (movie == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>Are you sure you want to delete this movie: <strong>@movie.Title</strong>?</p>
+
+    <button class="btn btn-danger" @onclick="DeleteMovie">Yes, Delete</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+}
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Movie movie;
+
+    protected override async Task OnInitializedAsync()
+    {
+        movie = await _context.Movies.FindAsync(Id);
+    }
+
+    private async Task DeleteMovie()
+    {
+        if (movie != null)
+        {
+            _context.Movies.Remove(movie);
+            await _context.SaveChangesAsync();
+            N.NavigateTo("/movies"); // go back to list
+        }
+    }
+
+    private void Cancel()
+    {
+        N.NavigateTo("/movies"); // go back to list without deleting
+    }
+}
